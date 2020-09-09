@@ -9,10 +9,19 @@ const quote = (val: string) => {
   return val;
 };
 
+const cleanOptions = (options: string[]) => {
+  let newOptions: string[] = [];
+  let i=0;
+  for(i=0;i<options.length;i++){
+    newOptions.push(options[i].replace(/"|;|&|,|\|/gi, ''));
+  }
+  return newOptions
+}
+
 export const wkhtmltopdf = (input: string, options: string[] = []) =>
   new Promise<Buffer>((resolve, reject) => {
     const isUrl = /^(https?|file):\/\//.test(input);
-    const childArgs = [wkhtmltopdf.command].concat(options, [isUrl ? quote(input) : '-', '-']);
+    const childArgs = [wkhtmltopdf.command].concat(cleanOptions(options), [isUrl ? quote(input) : '-', '-']);
     let child: ChildProcess;
     if (process.platform === 'win32') {
       child = spawn(wkhtmltopdf.command, childArgs.slice(1));
